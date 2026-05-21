@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" role="img">
+  <title>VeraHire — AI-Powered Candidate Fraud Screener</title>
+  <desc>GitHub social preview image for VeraHire, built by Radhika Pothuraju</desc>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="#0d0f14"/>
+
+  <!-- Subtle grid pattern -->
+  <defs>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="640" fill="url(#grid)"/>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="640" fill="#e8ff47"/>
+
+  <!-- Shield icon background circle -->
+  <circle cx="180" cy="320" r="90" fill="rgba(232,255,71,0.08)" stroke="rgba(232,255,71,0.15)" stroke-width="1.5"/>
+  <circle cx="180" cy="320" r="68" fill="rgba(232,255,71,0.06)" stroke="rgba(232,255,71,0.1)" stroke-width="1"/>
+
+  <!-- Shield shape -->
+  <path d="M180 248 L232 268 L232 312 Q232 356 180 384 Q128 356 128 312 L128 268 Z"
+    fill="none" stroke="#e8ff47" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Checkmark inside shield -->
+  <path d="M163 318 L174 330 L200 304"
+    fill="none" stroke="#e8ff47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- VERA HIRE title -->
+  <text x="310" y="288" font-family="Georgia, serif" font-size="88" font-weight="700"
+    fill="#f0f2f8" letter-spacing="-3">Vera</text>
+  <text x="508" y="288" font-family="Georgia, serif" font-size="88" font-weight="700"
+    fill="#e8ff47" letter-spacing="-3">Hire</text>
+
+  <!-- Tagline -->
+  <text x="310" y="338" font-family="Arial, sans-serif" font-size="26" font-weight="400"
+    fill="rgba(240,242,248,0.55)" letter-spacing="1">AI-Powered Candidate Fraud Screener</text>
+
+  <!-- Divider line -->
+  <line x1="310" y1="368" x2="1140" y2="368" stroke="rgba(232,255,71,0.2)" stroke-width="1"/>
+
+  <!-- Feature pills row -->
+  <!-- Pill 1 -->
+  <rect x="310" y="390" width="220" height="38" rx="19" fill="rgba(232,255,71,0.08)" stroke="rgba(232,255,71,0.2)" stroke-width="1"/>
+  <text x="420" y="414" font-family="Arial, sans-serif" font-size="16" fill="#e8ff47"
+    text-anchor="middle" letter-spacing="0.5">10 Fraud Signals</text>
+
+  <!-- Pill 2 -->
+  <rect x="546" y="390" width="220" height="38" rx="19" fill="rgba(77,170,255,0.08)" stroke="rgba(77,170,255,0.2)" stroke-width="1"/>
+  <text x="656" y="414" font-family="Arial, sans-serif" font-size="16" fill="#4daaff"
+    text-anchor="middle" letter-spacing="0.5">ID Verification</text>
+
+  <!-- Pill 3 -->
+  <rect x="782" y="390" width="220" height="38" rx="19" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.2)" stroke-width="1"/>
+  <text x="892" y="414" font-family="Arial, sans-serif" font-size="16" fill="#22c55e"
+    text-anchor="middle" letter-spacing="0.5">Proxy Detection</text>
+
+  <!-- Pill 4 -->
+  <rect x="1018" y="390" width="200" height="38" rx="19" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.2)" stroke-width="1"/>
+  <text x="1118" y="414" font-family="Arial, sans-serif" font-size="16" fill="#f59e0b"
+    text-anchor="middle" letter-spacing="0.5">Interview Qs</text>
+
+  <!-- Bottom author line -->
+  <text x="310" y="490" font-family="Arial, sans-serif" font-size="20" font-weight="400"
+    fill="rgba(240,242,248,0.35)" letter-spacing="0.5">Built by Radhika Pothuraju · Senior Technical Recruiter · 10+ years experience</text>
+
+  <!-- GitHub link -->
+  <text x="310" y="530" font-family="Arial, sans-serif" font-size="18" font-weight="400"
+    fill="rgba(232,255,71,0.5)" letter-spacing="0.5">github.com/rppothur/verahire</text>
+
+  <!-- Decorative dots top right -->
+  <circle cx="1180" cy="80" r="3" fill="rgba(232,255,71,0.3)"/>
+  <circle cx="1200" cy="80" r="3" fill="rgba(232,255,71,0.2)"/>
+  <circle cx="1220" cy="80" r="3" fill="rgba(232,255,71,0.1)"/>
+  <circle cx="1180" cy="100" r="3" fill="rgba(232,255,71,0.2)"/>
+  <circle cx="1200" cy="100" r="3" fill="rgba(232,255,71,0.15)"/>
+  <circle cx="1220" cy="100" r="3" fill="rgba(232,255,71,0.08)"/>
+  <circle cx="1180" cy="120" r="3" fill="rgba(232,255,71,0.1)"/>
+  <circle cx="1200" cy="120" r="3" fill="rgba(232,255,71,0.08)"/>
+  <circle cx="1220" cy="120" r="3" fill="rgba(232,255,71,0.05)"/>
+
+  <!-- Corner accent bottom right -->
+  <line x1="1200" y1="580" x2="1260" y2="580" stroke="rgba(232,255,71,0.3)" stroke-width="2"/>
+  <line x1="1260" y1="580" x2="1260" y2="520" stroke="rgba(232,255,71,0.3)" stroke-width="2"/>
+
+  <!-- Top right badge -->
+  <rect x="1080" y="48" width="160" height="36" rx="18" fill="rgba(34,197,94,0.12)" stroke="rgba(34,197,94,0.3)" stroke-width="1"/>
+  <circle cx="1104" cy="66" r="5" fill="#22c55e"/>
+  <text x="1118" y="71" font-family="Arial, sans-serif" font-size="14" fill="#22c55e" letter-spacing="1">OPEN SOURCE</text>
+</svg>
