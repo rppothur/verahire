@@ -708,7 +708,7 @@ Be specific — flag exact inconsistencies found in this resume, not generic obs
     const raw = data.content.map(c=>c.text||'').join('');
     const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
     renderResult(result, name);
-  } catch(e) { nav('screen'); alert('Something went wrong. Please try again.'); }
+  } catch(e) { nav('screen'); alert('Error: ' + e.message + ' | Check F12 Console for details'); }
 }
 
 const DIM_META={
