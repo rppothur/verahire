@@ -167,13 +167,15 @@ select.input-field{cursor:pointer;}
     <div class="login-sub">AI-powered candidate fraud screener<br>by Radhika Pothuraju</div>
     <input class="login-input" id="pwd-input" type="password" placeholder="Enter your password"
       onkeydown="if(event.key==='Enter')doLogin()">
+    <input class="login-input" id="api-key-input" type="password" placeholder="Enter your Anthropic API key" style="margin-top:8px;letter-spacing:0.02em;"
+      onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">
       <i class="ti ti-lock-open"></i> Unlock VeraHire
     </button>
     <div class="login-error" id="login-error"><i class="ti ti-alert-circle"></i> Incorrect password. Try again.</div>
     <div class="login-hint">
-      This tool is for authorized use only.<br>
-      Contact the owner for access.
+      Enter your app password and Anthropic API key.<br>
+      Your API key is never stored or shared — it stays in your browser session only.
     </div>
   </div>
 </div>
@@ -580,15 +582,26 @@ const APP_PASSWORD = 'VeraHire2025!';
 
 function doLogin() {
   const val = document.getElementById('pwd-input').value;
+  const apiKey = document.getElementById('api-key-input').value.trim();
   if (val === APP_PASSWORD) {
+    if (!apiKey || !apiKey.startsWith('sk-ant')) {
+      const err = document.getElementById('login-error');
+      err.style.display = 'flex';
+      err.style.alignItems = 'center';
+      err.style.gap = '6px';
+      err.textContent = 'Please enter your Anthropic API key (starts with sk-ant...)';
+      return;
+    }
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('app-wrap').style.display = 'block';
     sessionStorage.setItem('vh_auth', '1');
+    sessionStorage.setItem('vh_key', apiKey);
   } else {
     const err = document.getElementById('login-error');
     err.style.display = 'flex';
     err.style.alignItems = 'center';
     err.style.gap = '6px';
+    err.textContent = 'Incorrect password. Try again.';
     document.getElementById('pwd-input').value = '';
     document.getElementById('pwd-input').focus();
   }
@@ -596,9 +609,11 @@ function doLogin() {
 
 function doLogout() {
   sessionStorage.removeItem('vh_auth');
+  sessionStorage.removeItem('vh_key');
   document.getElementById('app-wrap').style.display = 'none';
   document.getElementById('login-wrap').style.display = 'flex';
   document.getElementById('pwd-input').value = '';
+  document.getElementById('api-key-input').value = '';
 }
 
 // Auto-unlock if already authenticated this session
@@ -688,10 +703,7 @@ Only score active signals (${signals}). For others set score:0,risk:"LOW",flags:
 Be specific — flag exact inconsistencies found in this resume, not generic observations.`;
 
   try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type": "application/json",
-"x-api-key": "YOUR-KEY-HERE",
-"anthropic-version": "2023-06-01"
-                                                                                          },body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
+    const resp = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
     const data = await resp.json();
     const raw = data.content.map(c=>c.text||'').join('');
     const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
@@ -770,9 +782,7 @@ Check: layout, fonts, security features, date consistency, ID/case number format
 Return ONLY valid JSON:
 {"verdict":"<LIKELY_AUTHENTIC|NEEDS_REVIEW|SUSPICIOUS|CANNOT_DETERMINE>","confidenceScore":<0-100>,"documentType":"<what this appears to be>","summary":"<2 sentence summary>","positiveSignals":["<finding>"],"redFlags":["<concern>"],"securityFeatures":"<present|partial|not_visible|missing>","dateConsistency":"<consistent|inconsistent|not_visible>","formatMatch":"<matches|partial|does_not_match|cannot_determine>","recommendation":"<specific action>"}`;
   try{
-    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type": "application/json",
-"x-api-key": "YOUR-KEY-HERE",
-"anthropic-version": "2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:idFileMime,data:idFileData}},{type:"text",text:textPrompt}]}]})});
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:idFileMime,data:idFileData}},{type:"text",text:textPrompt}]}]})});
     const data=await resp.json();
     const raw=data.content.map(c=>c.text||'').join('');
     renderIdResult(JSON.parse(raw.replace(/```json|```/g,'').trim()));
@@ -810,9 +820,7 @@ Return ONLY valid JSON:
 {"roleTitle":"<title>","techStack":["<tech>","<tech>","<tech>"],"categories":[{"name":"Technical Depth","color":"accent3","icon":"ti-code","description":"Questions that separate people who did the work from people who read about it","questions":["<q>","<q>","<q>","<q>","<q>"]},{"name":"Real Experience Verification","color":"amber","icon":"ti-timeline","description":"Questions to surface specific verifiable details only real experience provides","questions":["<q>","<q>","<q>","<q>"]},{"name":"Proxy / Fraud Detection","color":"accent2","icon":"ti-shield-search","description":"Questions a proxy or memorized-answer candidate will struggle with","questions":["<q>","<q>","<q>","<q>"]},{"name":"Behavioral / Situational","color":"green","icon":"ti-users","description":"STAR-format questions for judgment, collaboration, and culture fit","questions":["<q>","<q>","<q>","<q>"]}],"redFlagAnswers":["<pattern>","<pattern>","<pattern>"],"goodSignalAnswers":["<pattern>","<pattern>","<pattern>"]}
 Make questions specific to the actual tech stack and responsibilities. Proxy detection questions must be things only someone who genuinely did the work would answer naturally.`;
   try{
-    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type": "application/json",
-"x-api-key": "YOUR-KEY-HERE",
-"anthropic-version": "2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
     const data=await resp.json();
     const raw=data.content.map(c=>c.text||'').join('');
     renderQuestions(JSON.parse(raw.replace(/```json|```/g,'').trim()));
@@ -1223,9 +1231,7 @@ Return ONLY valid JSON:
 
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST", headers: {"Content-Type": "application/json",
-"x-api-key": "YOUR-KEY-HERE",
-"anthropic-version": "2023-06-01" },
+      method: "POST", headers: { "Content-Type": "application/json", "x-api-key": sessionStorage.getItem('vh_key'), "anthropic-version": "2023-06-01" },
       body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 600, messages: [{ role: "user", content: prompt }] })
     });
     const data = await resp.json();
