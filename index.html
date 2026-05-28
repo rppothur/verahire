@@ -2407,11 +2407,20 @@ function renderMarketBrief(r) {
   html += '<div style="margin-bottom:14px;"><div style="font-size:10px;color:var(--accent3);text-transform:uppercase;margin-bottom:8px;">Market Trends</div>';
   (r.marketTrends||[]).forEach(function(t){ html += '<div style="display:flex;gap:7px;margin-bottom:5px;font-size:12px;"><div style="color:var(--accent3);">↗</div><span>' + t + '</span></div>'; });
   html += '</div></div>';
-  html += '<div class="action-row" style="padding:0 18px 14px;"><button class="btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('mkt-result').innerText).then(function(){alert('Brief copied!')})"><i class="ti ti-copy"></i> Copy Brief</button></div>';
+  html += '<div class="action-row" style="padding:0 18px 14px;"><button class="btn-sm" onclick="copyMarketBrief()"><i class="ti ti-copy"></i> Copy Brief</button></div>';
   html += '</div>';
 
   document.getElementById('mkt-result').innerHTML = html;
   document.getElementById('mkt-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function copyMarketBrief() {
+  var el = document.getElementById('mkt-result');
+  if (el) {
+    navigator.clipboard.writeText(el.innerText).then(function() {
+      alert('Brief copied!');
+    });
+  }
 }
 
 </script>
