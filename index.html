@@ -165,6 +165,10 @@ select.input-field{cursor:pointer;}
     <div class="login-logo"><i class="ti ti-shield-check"></i></div>
     <div class="login-title">VeraHire</div>
     <div class="login-sub">AI-powered candidate fraud screener<br>by Radhika Pothuraju</div>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:20px;padding:4px 12px;margin-bottom:16px;">
+      <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;display:inline-block;"></span>
+      <span style="font-size:11px;color:#f59e0b;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;">BETA — Currently in testing phase</span>
+    </div>
     <input class="login-input" id="pwd-input" type="password" placeholder="Enter your password"
       onkeydown="if(event.key==='Enter')doLogin()">
     <input class="login-input" id="api-key-input" type="password" placeholder="Enter your Anthropic API key" style="margin-top:8px;letter-spacing:0.02em;"
@@ -192,6 +196,7 @@ select.input-field{cursor:pointer;}
     </div>
     <div class="topbar-right">
       <span class="badge">● AI POWERED</span>
+      <span style="background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 9px;border-radius:20px;letter-spacing:.03em;">BETA</span>
       <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i> Lock</button>
     </div>
   </div>
@@ -203,12 +208,19 @@ select.input-field{cursor:pointer;}
       <button class="nav-item" data-screen="id" onclick="nav('id')"><i class="ti ti-id"></i> Verify ID / Visa</button>
       <button class="nav-item" data-screen="questions" onclick="nav('questions')"><i class="ti ti-messages"></i> Interview Questions</button>
       <button class="nav-item" data-screen="history" onclick="nav('history')"><i class="ti ti-history"></i> History</button>
+      <button class="nav-item" data-screen="saved" onclick="nav('saved')"><i class="ti ti-database"></i> Saved Candidates</button>
+      <button class="nav-item" data-screen="compare" onclick="nav('compare')"><i class="ti ti-users"></i> Compare Candidates</button>
+      <button class="nav-item" data-screen="submit" onclick="nav('submit')"><i class="ti ti-send"></i> Submission Email</button>
+      <button class="nav-item" data-screen="market" onclick="nav('market')"><i class="ti ti-chart-bar"></i> Market Intelligence</button>
       <div class="nav-label" style="margin-top:20px;">Help</div>
       <button class="nav-item" data-screen="guide" onclick="nav('guide')"><i class="ti ti-book"></i> How to Use</button>
+      <button class="nav-item" data-screen="feedback" onclick="nav('feedback')"><i class="ti ti-message-plus"></i> Share Feedback</button>
       <div class="sidebar-note">
         Built from 10+ years of recruiting experience. Every fraud signal here has been seen in the field.
         <br><br>
         <span style="color:var(--accent);font-weight:700;">VeraHire</span> — verify before you hire.
+        <br><br>
+        <span style="color:var(--amber);font-size:10px;">🔶 Beta version — actively being improved. Your feedback shapes the next release.</span>
       </div>
     </div>
 
@@ -218,26 +230,27 @@ select.input-field{cursor:pointer;}
       <div class="screen active" id="screen-screen">
         <div class="screen-title">Screen a candidate</div>
         <div class="screen-sub">Paste resume + job description. AI checks 10 fraud dimensions and gives you specific interview probes to follow up with.</div>
+        <div style="display:flex;gap:16px;margin-bottom:10px;font-size:12px;align-items:center;"><span><span style="color:var(--accent2);font-weight:700;">*</span> Required</span><span><span style="color:var(--amber);">★</span> Highly recommended</span><span style="color:var(--muted);">(optional) not needed</span></div>
         <div class="tip"><i class="ti ti-bulb"></i> Always paste the job description — it's the #1 way to catch resumes written to match the posting rather than the person's real experience.</div>
         <div class="card">
           <div class="card-title"><i class="ti ti-user"></i> Candidate basics</div>
           <div class="two-col">
             <div class="form-group" style="margin-bottom:0">
-              <span class="field-label">CANDIDATE NAME</span>
+              <span class="field-label">CANDIDATE NAME <span style="color:var(--muted);font-size:9px;">(optional)</span></span>
               <input class="input-field" id="cand-name" placeholder="e.g. John Smith" type="text">
             </div>
             <div class="form-group" style="margin-bottom:0">
-              <span class="field-label">LINKEDIN URL (OPTIONAL)</span>
+              <span class="field-label">LINKEDIN URL <span style="color:var(--muted);font-size:9px;">(optional)</span></span>
               <input class="input-field" id="linkedin-url" placeholder="linkedin.com/in/…" type="text">
             </div>
           </div>
         </div>
         <div class="card">
-          <div class="card-title"><i class="ti ti-file-text"></i> Resume text *</div>
+          <div class="card-title"><i class="ti ti-file-text"></i> Resume <span style="color:var(--accent2);">*</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">(required)</span></div>
           <textarea class="input-field" id="resume-text" placeholder="Paste full resume — work history, skills, education, certifications…" style="min-height:150px;"></textarea>
         </div>
         <div class="card">
-          <div class="card-title"><i class="ti ti-briefcase"></i> Job description (highly recommended)</div>
+          <div class="card-title"><i class="ti ti-briefcase"></i> Job Description <span style="color:var(--amber);">★</span> <span style="font-size:10px;color:var(--amber);font-weight:400;">Highly recommended for JD fabrication</span></div>
           <textarea class="input-field" id="jd-text" placeholder="Paste the job description — AI will detect if the resume was written to match it…" style="min-height:90px;"></textarea>
         </div>
         <div class="card">
@@ -265,7 +278,8 @@ select.input-field{cursor:pointer;}
       <div class="screen" id="screen-loading">
         <div class="loading-wrap">
           <div class="spinner"></div>
-          <div style="font-size:15px;font-weight:700;margin-bottom:14px;">Analyzing candidate…</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:14px;" id="loading-title">Analyzing candidate…</div>
+          <div id="loading-jd-note" style="display:none;font-size:11px;color:var(--amber);font-family:'IBM Plex Mono',monospace;margin-bottom:10px;">+ Running JD fabrication analysis in parallel…</div>
           <ul class="loading-steps" id="ls">
             <li id="ls1">Checking resume structure and language patterns</li>
             <li id="ls2">Scanning for AI-generated content signals</li>
@@ -303,7 +317,8 @@ select.input-field{cursor:pointer;}
           <div class="rec-title"><i class="ti ti-bulb"></i> Interview probes to verify these findings</div>
           <ul class="rec-list" id="rec-list"></ul>
         </div>
-        <div class="action-row">
+        <div id="jd-match-box" style="display:none;margin-bottom:16px;"></div>
+      <div class="action-row">
           <button class="btn-sm" onclick="copyReport()"><i class="ti ti-copy"></i> Copy Report</button>
           <button class="btn-sm" onclick="nav('id')"><i class="ti ti-id"></i> Verify Their ID</button>
           <button class="btn-sm" onclick="goGenQuestions()"><i class="ti ti-messages"></i> Interview Questions</button>
@@ -317,12 +332,12 @@ select.input-field{cursor:pointer;}
         <div class="screen-sub">Upload a government-issued ID or immigration document for AI authenticity analysis.</div>
         <div class="warn"><i class="ti ti-alert-triangle"></i><div><strong>Legal note:</strong> Under IRCA and I-9 rules, only request identity documents at the point of hire — not as a pre-screening filter. Use during onboarding or staffing agency placement verification. Always confirm legal decisions through <a href="https://www.e-verify.gov" target="_blank" style="color:var(--amber);">E-Verify</a> or <a href="https://egov.uscis.gov/casestatus/landing.do" target="_blank" style="color:var(--amber);">USCIS</a>.</div></div>
         <div class="card">
-          <div class="card-title"><i class="ti ti-file-upload"></i> Upload document</div>
+          <div class="card-title"><i class="ti ti-file-upload"></i> Upload Document <span style="color:var(--accent2);">*</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">(required)</span></div>
           <div class="dropzone" id="id-dropzone">
-            <input type="file" id="id-file" accept="image/*,.pdf" onchange="handleIdFile(event)">
+            <input type="file" id="id-file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,.pdf,.doc,.docx" onchange="handleIdFile(event)">
             <div class="dz-icon"><i class="ti ti-id"></i></div>
             <div class="dz-title">Drop document image here</div>
-            <div class="dz-sub">Driver's License · Passport · EAD · Green Card · H1B · SSN Card</div>
+            <div class="dz-sub">JPG · PNG · PDF · Word (.doc/.docx) accepted</div>
           </div>
           <div class="preview-strip" id="id-preview"></div>
         </div>
@@ -385,7 +400,7 @@ select.input-field{cursor:pointer;}
         <div class="screen-title">Interview question generator</div>
         <div class="screen-sub">Paste a job description and get role-specific technical, behavioral, and fraud-detection questions for that exact role.</div>
         <div class="card">
-          <div class="card-title"><i class="ti ti-briefcase"></i> Job description *</div>
+          <div class="card-title"><i class="ti ti-briefcase"></i> Job Description <span style="color:var(--accent2);">*</span> <span style="font-size:10px;color:var(--muted);font-weight:400;">(required)</span></div>
           <textarea class="input-field" id="q-jd" placeholder="Paste the full job description here…" style="min-height:140px;"></textarea>
         </div>
         <div class="card">
@@ -571,7 +586,328 @@ select.input-field{cursor:pointer;}
       <!-- ════════════════ HISTORY ════════════════ -->
       <!-- already defined above -->
 
-    </div><!-- end content -->
+    
+      <!-- ════════════════ SAVED CANDIDATES ════════════════ -->
+      <div class="screen" id="screen-saved">
+        <div class="screen-title">Saved Candidates</div>
+        <div class="screen-sub">All candidates you have screened are saved here automatically — across sessions. Click any candidate to reload their results.</div>
+        <div class="action-row" style="margin-bottom:14px;">
+          <button class="btn-sm" onclick="renderSavedCandidates()"><i class="ti ti-refresh"></i> Refresh</button>
+          <button class="btn-sm" onclick="clearAllCandidates()" style="color:var(--accent2);border-color:rgba(255,77,77,0.3);"><i class="ti ti-trash"></i> Clear All</button>
+        </div>
+        <div id="saved-candidates-list">
+          <div class="empty-state"><i class="ti ti-database-off"></i><p>No saved candidates yet.<br>Screen candidates and they will appear here automatically.</p></div>
+        </div>
+      </div>
+
+      <!-- ════════════════ COMPARE CANDIDATES ════════════════ -->
+      <div class="screen" id="screen-compare">
+        <div class="screen-title">Compare Candidates</div>
+        <div class="screen-sub">Select candidates you have already screened, or paste new resumes. VeraHire ranks them for the same role.</div>
+        <div class="tip"><i class="ti ti-bulb"></i> Screen your candidates first using the Screen Candidate tab — they will appear here automatically for easy comparison.</div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-briefcase"></i> Job Description <span style="color:var(--accent2);">*</span></div>
+          <textarea class="input-field" id="cmp-jd" placeholder="Paste the job description for this role…" style="min-height:80px;"></textarea>
+        </div>
+
+        <!-- Candidate 1 -->
+        <div class="card">
+          <div class="card-title"><i class="ti ti-user"></i> Candidate 1 <span style="color:var(--accent2);">*</span></div>
+          <div style="margin-bottom:8px;">
+            <span class="field-label">SELECT FROM SCREENED CANDIDATES</span>
+            <select class="input-field" id="cmp-pick1" onchange="loadFromHistory('cmp-pick1','cmp-name1','cmp-resume1','cmp-fraud1')">
+              <option value="">— Select a screened candidate —</option>
+            </select>
+          </div>
+          <div id="cmp-fraud1-badge" style="display:none;margin-bottom:8px;"></div>
+          <span class="field-label">OR PASTE RESUME MANUALLY</span>
+          <input class="input-field" id="cmp-name1" placeholder="Candidate 1 name" type="text" style="margin-bottom:8px;">
+          <textarea class="input-field" id="cmp-resume1" placeholder="Paste Candidate 1 resume…" style="min-height:80px;"></textarea>
+          <input type="hidden" id="cmp-fraud1">
+        </div>
+
+        <!-- Candidate 2 -->
+        <div class="card">
+          <div class="card-title"><i class="ti ti-user"></i> Candidate 2 <span style="color:var(--accent2);">*</span></div>
+          <div style="margin-bottom:8px;">
+            <span class="field-label">SELECT FROM SCREENED CANDIDATES</span>
+            <select class="input-field" id="cmp-pick2" onchange="loadFromHistory('cmp-pick2','cmp-name2','cmp-resume2','cmp-fraud2')">
+              <option value="">— Select a screened candidate —</option>
+            </select>
+          </div>
+          <div id="cmp-fraud2-badge" style="display:none;margin-bottom:8px;"></div>
+          <span class="field-label">OR PASTE RESUME MANUALLY</span>
+          <input class="input-field" id="cmp-name2" placeholder="Candidate 2 name" type="text" style="margin-bottom:8px;">
+          <textarea class="input-field" id="cmp-resume2" placeholder="Paste Candidate 2 resume…" style="min-height:80px;"></textarea>
+          <input type="hidden" id="cmp-fraud2">
+        </div>
+
+        <!-- Candidate 3 -->
+        <div class="card">
+          <div class="card-title"><i class="ti ti-user"></i> Candidate 3 <span style="font-size:10px;color:var(--muted);font-weight:400;">(optional)</span></div>
+          <div style="margin-bottom:8px;">
+            <span class="field-label">SELECT FROM SCREENED CANDIDATES</span>
+            <select class="input-field" id="cmp-pick3" onchange="loadFromHistory('cmp-pick3','cmp-name3','cmp-resume3','cmp-fraud3')">
+              <option value="">— Select a screened candidate —</option>
+            </select>
+          </div>
+          <div id="cmp-fraud3-badge" style="display:none;margin-bottom:8px;"></div>
+          <span class="field-label">OR PASTE RESUME MANUALLY</span>
+          <input class="input-field" id="cmp-name3" placeholder="Candidate 3 name (optional)" type="text" style="margin-bottom:8px;">
+          <textarea class="input-field" id="cmp-resume3" placeholder="Paste Candidate 3 resume (optional)…" style="min-height:80px;"></textarea>
+          <input type="hidden" id="cmp-fraud3">
+        </div>
+
+        <button class="btn-primary" onclick="runComparison()">
+          <i class="ti ti-git-compare"></i> Compare & Rank Candidates
+        </button>
+        <div id="cmp-result" style="margin-top:18px;"></div>
+      </div>
+
+      <!-- COMPARE LOADING -->
+      <div class="screen" id="screen-cmp-loading">
+        <div class="loading-wrap">
+          <div class="spinner"></div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:14px;">Comparing candidates…</div>
+          <ul class="loading-steps">
+            <li class="active">Analyzing each resume against the job description</li>
+            <li>Scoring fraud risk for each candidate</li>
+            <li>Evaluating skills and experience match</li>
+            <li>Ranking candidates for submission</li>
+            <li>Compiling comparison report…</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ════════════════ SUBMISSION EMAIL ════════════════ -->
+      <div class="screen" id="screen-submit">
+        <div class="screen-title">Client Submission Email</div>
+        <div class="screen-sub">Generate a professional candidate submission email to send to your client in seconds.</div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-user"></i> Candidate Details</div>
+          <div class="two-col" style="margin-bottom:10px;">
+            <div>
+              <span class="field-label">CANDIDATE NAME <span style="color:var(--accent2);">*</span></span>
+              <input class="input-field" id="sub-cand-name" placeholder="Full name" type="text">
+            </div>
+            <div>
+              <span class="field-label">ROLE BEING SUBMITTED FOR <span style="color:var(--accent2);">*</span></span>
+              <input class="input-field" id="sub-role" placeholder="e.g. Senior Java Developer" type="text">
+            </div>
+          </div>
+          <div class="two-col" style="margin-bottom:10px;">
+            <div>
+              <span class="field-label">CLIENT / COMPANY NAME <span style="color:var(--accent2);">*</span></span>
+              <input class="input-field" id="sub-client" placeholder="e.g. Flagstar Bank" type="text">
+            </div>
+            <div>
+              <span class="field-label">HIRING MANAGER NAME <span style="font-size:9px;color:var(--muted);">(optional)</span></span>
+              <input class="input-field" id="sub-hm" placeholder="e.g. John Smith" type="text">
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <span class="field-label">RATE / SALARY <span style="font-size:9px;color:var(--muted);">(optional)</span></span>
+              <input class="input-field" id="sub-rate" placeholder="e.g. $85/hr C2C or $120K" type="text">
+            </div>
+            <div>
+              <span class="field-label">AVAILABILITY <span style="font-size:9px;color:var(--muted);">(optional)</span></span>
+              <input class="input-field" id="sub-avail" placeholder="e.g. 2 weeks notice" type="text">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-file-text"></i> Resume Summary <span style="color:var(--accent2);">*</span></div>
+          <textarea class="input-field" id="sub-resume" placeholder="Paste the candidate's resume or key highlights…" style="min-height:120px;"></textarea>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-briefcase"></i> Job Description <span style="color:var(--amber);">★</span> <span style="font-size:10px;color:var(--amber);font-weight:400;">Recommended for better match highlights</span></div>
+          <textarea class="input-field" id="sub-jd" placeholder="Paste the job description…" style="min-height:80px;"></textarea>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-settings"></i> Email Tone</div>
+          <select class="input-field" id="sub-tone">
+            <option value="professional">Professional & formal</option>
+            <option value="warm" selected>Warm & conversational</option>
+            <option value="concise">Short & concise</option>
+          </select>
+        </div>
+
+        <button class="btn-primary" onclick="runSubmissionEmail()">
+          <i class="ti ti-mail"></i> Generate Submission Email
+        </button>
+        <div id="sub-result" style="margin-top:18px;"></div>
+      </div>
+
+      <!-- SUBMIT LOADING -->
+      <div class="screen" id="screen-sub-loading">
+        <div class="loading-wrap">
+          <div class="spinner"></div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:14px;">Writing submission email…</div>
+          <ul class="loading-steps">
+            <li class="active">Analyzing candidate highlights</li>
+            <li>Matching against job requirements</li>
+            <li>Crafting professional email</li>
+            <li>Finalizing subject line and body…</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ════════════════ MARKET INTELLIGENCE ════════════════ -->
+      <div class="screen" id="screen-market">
+        <div class="screen-title">Market Intelligence Brief</div>
+        <div class="screen-sub">Get a real-time market brief on any role — salary ranges, candidate availability, hiring trends, and talking points for your clients.</div>
+
+        <div class="tip"><i class="ti ti-bulb"></i> Use this before a client intake call to walk in informed. Share the brief with hiring managers who think their budget or timeline is realistic when it isn't.</div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-search"></i> Role Details</div>
+          <div class="two-col" style="margin-bottom:10px;">
+            <div>
+              <span class="field-label">JOB TITLE <span style="color:var(--accent2);">*</span></span>
+              <input class="input-field" id="mkt-title" placeholder="e.g. Senior DevOps Engineer" type="text">
+            </div>
+            <div>
+              <span class="field-label">LOCATION <span style="color:var(--accent2);">*</span></span>
+              <input class="input-field" id="mkt-location" placeholder="e.g. San Francisco, CA or Remote" type="text">
+            </div>
+          </div>
+          <div class="two-col" style="margin-bottom:10px;">
+            <div>
+              <span class="field-label">EXPERIENCE LEVEL</span>
+              <select class="input-field" id="mkt-level">
+                <option>Junior (0-2 years)</option>
+                <option selected>Mid-level (3-5 years)</option>
+                <option>Senior (6-10 years)</option>
+                <option>Staff / Principal (10+ years)</option>
+                <option>Manager / Director</option>
+              </select>
+            </div>
+            <div>
+              <span class="field-label">EMPLOYMENT TYPE</span>
+              <select class="input-field" id="mkt-type">
+                <option>Full-time permanent</option>
+                <option>Contract / C2C</option>
+                <option>Contract to hire</option>
+                <option>Part-time</option>
+              </select>
+            </div>
+          </div>
+          <span class="field-label">KEY SKILLS / TECH STACK <span style="font-size:9px;color:var(--muted);">(optional but helps)</span></span>
+          <input class="input-field" id="mkt-skills" placeholder="e.g. AWS, Kubernetes, Terraform, Python" type="text">
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-message"></i> What do you need this brief for? <span style="font-size:9px;color:var(--muted);">(optional)</span></div>
+          <select class="input-field" id="mkt-purpose">
+            <option value="client_call">Preparing for a client intake call</option>
+            <option value="candidate_offer">Advising a candidate on their rate</option>
+            <option value="sourcing">Understanding where to find candidates</option>
+            <option value="general">General market understanding</option>
+          </select>
+        </div>
+
+        <button class="btn-primary" onclick="runMarketIntelligence()">
+          <i class="ti ti-chart-bar"></i> Generate Market Brief
+        </button>
+        <div id="mkt-result" style="margin-top:18px;"></div>
+      </div>
+
+      <!-- MARKET LOADING -->
+      <div class="screen" id="screen-mkt-loading">
+        <div class="loading-wrap">
+          <div class="spinner"></div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:14px;">Researching market data…</div>
+          <ul class="loading-steps">
+            <li class="active">Analyzing current market conditions</li>
+            <li>Researching salary and rate benchmarks</li>
+            <li>Assessing candidate availability</li>
+            <li>Identifying sourcing channels</li>
+            <li>Compiling market brief…</li>
+          </ul>
+        </div>
+      </div>
+
+
+      <!-- ════════════════ FEEDBACK ════════════════ -->
+      <div class="screen" id="screen-feedback">
+        <div class="screen-title">Share Your Feedback</div>
+        <div class="screen-sub">VeraHire is in beta and actively being improved. Your suggestions directly shape what gets built next.</div>
+
+        <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:16px;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start;">
+          <i class="ti ti-flask" style="font-size:18px;color:#f59e0b;margin-top:2px;flex-shrink:0;"></i>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#f59e0b;margin-bottom:4px;">Beta Version — Testing Phase</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.7;">VeraHire was built by a recruiter, for recruiters — without a developer background. It is being tested and improved based on real-world usage. Every piece of feedback helps make it better. Thank you for trying it.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-user"></i> Your Details <span style="font-size:9px;color:var(--muted);font-weight:400;">(optional — helps us follow up)</span></div>
+          <div class="two-col">
+            <div>
+              <span class="field-label">YOUR NAME</span>
+              <input class="input-field" id="fb-name" placeholder="Your name" type="text">
+            </div>
+            <div>
+              <span class="field-label">YOUR ROLE</span>
+              <input class="input-field" id="fb-role" placeholder="e.g. IT Staffing Recruiter" type="text">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-star"></i> How would you rate VeraHire overall?</div>
+          <div style="display:flex;gap:10px;margin-top:4px;" id="fb-rating-row">
+            <button type="button" onclick="setRating(1)" id="fb-star-1" style="background:none;border:none;font-size:28px;cursor:pointer;color:var(--muted);transition:color .15s;padding:4px;">☆</button>
+            <button type="button" onclick="setRating(2)" id="fb-star-2" style="background:none;border:none;font-size:28px;cursor:pointer;color:var(--muted);transition:color .15s;padding:4px;">☆</button>
+            <button type="button" onclick="setRating(3)" id="fb-star-3" style="background:none;border:none;font-size:28px;cursor:pointer;color:var(--muted);transition:color .15s;padding:4px;">☆</button>
+            <button type="button" onclick="setRating(4)" id="fb-star-4" style="background:none;border:none;font-size:28px;cursor:pointer;color:var(--muted);transition:color .15s;padding:4px;">☆</button>
+            <button type="button" onclick="setRating(5)" id="fb-star-5" style="background:none;border:none;font-size:28px;cursor:pointer;color:var(--muted);transition:color .15s;padding:4px;">☆</button>
+          </div>
+          <input type="hidden" id="fb-rating" value="">
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-thumb-up"></i> What is working well?</div>
+          <textarea class="input-field" id="fb-good" placeholder="Tell us what you like about VeraHire…" style="min-height:80px;"></textarea>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-tool"></i> What needs improvement?</div>
+          <textarea class="input-field" id="fb-improve" placeholder="Any bugs, errors, or things that could work better…" style="min-height:80px;"></textarea>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-bulb"></i> What feature would you love to see next?</div>
+          <textarea class="input-field" id="fb-feature" placeholder="Your idea for the next feature — no idea too small or too big…" style="min-height:80px;"></textarea>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-message"></i> Anything else?</div>
+          <textarea class="input-field" id="fb-other" placeholder="Any other thoughts, suggestions, or comments…" style="min-height:60px;"></textarea>
+        </div>
+
+        <button class="btn-primary" onclick="submitFeedback()" id="fb-submit-btn">
+          <i class="ti ti-send"></i> Submit Feedback
+        </button>
+
+        <div id="fb-result" style="margin-top:18px;display:none;">
+          <div style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:20px;text-align:center;">
+            <i class="ti ti-circle-check" style="font-size:32px;color:var(--green);display:block;margin-bottom:10px;"></i>
+            <div style="font-size:16px;font-weight:800;margin-bottom:6px;">Thank you for your feedback!</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.7;">Your suggestions have been recorded and will directly influence the next version of VeraHire. This tool exists because of feedback like yours.</div>
+            <div style="margin-top:14px;font-size:12px;color:var(--muted);">Built by Radhika Pothuraju — <span style="color:var(--accent3);">radhikabvk@gmail.com</span></div>
+          </div>
+        </div>
+      </div>
+
+</div><!-- end content -->
   </div><!-- end main -->
 </div><!-- end app-wrap -->
 
@@ -621,6 +957,14 @@ if (sessionStorage.getItem('vh_auth') === '1') {
   document.getElementById('login-wrap').style.display = 'none';
   document.getElementById('app-wrap').style.display = 'block';
 }
+// Load saved count on startup
+window.addEventListener('load', function() {
+  const saved = getSavedCandidates();
+  if (saved.length) {
+    const navBtn = document.querySelector('[data-screen="saved"]');
+    if (navBtn) navBtn.innerHTML = '<i class="ti ti-database"></i> Saved (' + saved.length + ')';
+  }
+});
 
 // ── NAV ──
 function nav(name) {
@@ -629,6 +973,185 @@ function nav(name) {
   document.getElementById('screen-' + name).classList.add('active');
   const nb = document.querySelector('[data-screen="' + name + '"]');
   if (nb) nb.classList.add('active');
+  // Populate compare dropdowns when navigating to compare screen
+  if (name === 'compare') populateCompareDropdowns();
+  if (name === 'saved') renderSavedCandidates();
+}
+
+// ══════════════════════════════════════════
+// PERSISTENT CANDIDATE STORAGE
+// ══════════════════════════════════════════
+const STORAGE_KEY = 'verahire_candidates';
+
+function saveCandidate(name, score, risk, result, resumeText) {
+  try {
+    const saved = getSavedCandidates();
+    // Check if candidate already exists — update if so
+    const existing = saved.findIndex(c => c.name === name);
+    const candidate = {
+      name,
+      score,
+      risk,
+      result,
+      resumeText: resumeText ? resumeText.substring(0, 5000) : '',
+      savedAt: new Date().toLocaleString()
+    };
+    if (existing > -1) {
+      saved[existing] = candidate;
+    } else {
+      saved.unshift(candidate);
+    }
+    // Keep max 50 candidates
+    if (saved.length > 50) saved.pop();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    showSaveToast(name);
+  } catch(e) {
+    console.log('Storage save error:', e);
+  }
+}
+
+function getSavedCandidates() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch(e) { return []; }
+}
+
+function deleteCandidate(name) {
+  try {
+    const saved = getSavedCandidates().filter(c => c.name !== name);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    renderSavedCandidates();
+    populateCompareDropdowns();
+  } catch(e) {}
+}
+
+function clearAllCandidates() {
+  if (confirm('Delete all saved candidates? This cannot be undone.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    renderSavedCandidates();
+    populateCompareDropdowns();
+    alert('All saved candidates cleared.');
+  }
+}
+
+function showSaveToast(name) {
+  // Show a small toast notification
+  let toast = document.getElementById('save-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'save-toast';
+    toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid rgba(34,197,94,0.4);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--green);z-index:9999;display:none;font-family:IBM Plex Mono,monospace;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = '✓ ' + name + ' saved';
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 2500);
+}
+
+function renderSavedCandidates() {
+  const list = document.getElementById('saved-candidates-list');
+  if (!list) return;
+  const saved = getSavedCandidates();
+  if (!saved.length) {
+    list.innerHTML = '<div class="empty-state"><i class="ti ti-database-off"></i><p>No saved candidates yet.<br>Screen candidates and they will be saved here automatically.</p></div>';
+    return;
+  }
+  list.innerHTML = saved.map(c => {
+    const clr = c.risk === 'HIGH' ? 'var(--accent2)' : c.risk === 'MEDIUM' ? 'var(--amber)' : 'var(--green)';
+    return `<div class="history-item" style="position:relative;">
+      <div onclick="reloadSavedCandidate('${c.name.replace(/'/g,"\'")}')">
+        <div class="hi-name">${c.name}</div>
+        <div class="hi-meta">${c.savedAt} · Score: ${c.score}/100</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="risk-badge" style="background:${clr}22;color:${clr};border:1px solid ${clr}44;">${c.risk}</span>
+        <button onclick="deleteCandidate('${c.name.replace(/'/g,"\'")}');event.stopPropagation();" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;" title="Delete"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function reloadSavedCandidate(name) {
+  const saved = getSavedCandidates();
+  const c = saved.find(s => s.name === name);
+  if (!c || !c.result) return;
+  renderResult(c.result, c.name);
+}
+
+function populateCompareDropdowns() {
+  const selects = ['cmp-pick1','cmp-pick2','cmp-pick3'];
+  selects.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Select a candidate —</option>';
+
+    // Session candidates
+    const sessionCands = history.filter(h => !h.name.includes('(Live)') && !h.name.includes('(Post)'));
+    if (sessionCands.length) {
+      const grp = document.createElement('optgroup');
+      grp.label = '── This Session ──';
+      sel.appendChild(grp);
+      sessionCands.forEach((h, i) => {
+        const riskColor = h.risk === 'HIGH' ? '🔴' : h.risk === 'MEDIUM' ? '🟡' : '🟢';
+        const opt = document.createElement('option');
+        opt.value = 'session_' + i;
+        opt.textContent = riskColor + ' ' + h.name + ' — Score: ' + h.score;
+        grp.appendChild(opt);
+      });
+    }
+
+    // Saved candidates from localStorage
+    const saved = getSavedCandidates();
+    if (saved.length) {
+      const grp2 = document.createElement('optgroup');
+      grp2.label = '── Saved Candidates ──';
+      sel.appendChild(grp2);
+      saved.forEach((c, i) => {
+        const riskColor = c.risk === 'HIGH' ? '🔴' : c.risk === 'MEDIUM' ? '🟡' : '🟢';
+        const opt = document.createElement('option');
+        opt.value = 'saved_' + i;
+        opt.textContent = riskColor + ' ' + c.name + ' — Score: ' + c.score + ' (saved)';
+        grp2.appendChild(opt);
+      });
+    }
+
+    if (current) sel.value = current;
+  });
+}
+
+function loadFromHistory(selectId, nameId, resumeId, fraudId) {
+  const sel = document.getElementById(selectId);
+  const val = sel.value;
+  if (!val) return;
+
+  let h = null;
+  if (val.startsWith('session_')) {
+    const idx = parseInt(val.replace('session_', ''));
+    const sessionCands = history.filter(hh => !hh.name.includes('(Live)') && !hh.name.includes('(Post)'));
+    h = sessionCands[idx];
+  } else if (val.startsWith('saved_')) {
+    const idx = parseInt(val.replace('saved_', ''));
+    h = getSavedCandidates()[idx];
+  }
+  if (!h) return;
+
+  document.getElementById(nameId).value = h.name;
+  if (h.resumeText) {
+    document.getElementById(resumeId).value = h.resumeText;
+  } else {
+    document.getElementById(resumeId).placeholder = h.name + ' — fraud data loaded from ' + (val.startsWith('saved_') ? 'saved storage' : 'this session');
+  }
+  document.getElementById(fraudId).value = JSON.stringify({score: h.score, risk: h.risk});
+
+  const badgeEl = document.getElementById(fraudId + '-badge');
+  if (badgeEl) {
+    const c = h.risk === 'HIGH' ? 'var(--accent2)' : h.risk === 'MEDIUM' ? 'var(--amber)' : 'var(--green)';
+    const src = val.startsWith('saved_') ? ' (saved)' : ' (this session)';
+    badgeEl.innerHTML = '<span style="font-size:11px;font-family:IBM Plex Mono,monospace;color:' + c + ';background:' + c + '22;border:1px solid ' + c + '44;padding:3px 10px;border-radius:20px;">✓ Fraud Score: ' + h.score + ' (' + h.risk + ' RISK)' + src + '</span>';
+    badgeEl.style.display = 'block';
+  }
 }
 
 // ── SIGNALS ──
@@ -667,48 +1190,102 @@ async function runAnalysis() {
   const jd = document.getElementById('jd-text').value.trim();
   const linkedin = document.getElementById('linkedin-url').value.trim();
   const name = document.getElementById('cand-name').value.trim() || 'Candidate';
-  if (!resume) { alert('Please paste the resume text first.'); return; }
+  if (!resume) { alert('Please paste or upload a resume first.'); return; }
   lastJD = jd;
   showLoading('loading','ls',7);
+  if (jd) {
+    const note = document.getElementById('loading-jd-note');
+    if(note) note.style.display = 'block';
+  }
   const signals = [...activeSignals].join(', ');
-  const prompt = `You are a senior technical recruiter and fraud investigator with 10+ years of IT staffing experience. Analyze this resume and return ONLY valid JSON — no markdown, no backticks.
+
+  // Smart chunk - extracts header + experience + skills from any length resume
+  function getOptimalChunk(text) {
+    if (text.length <= 4500) return text;
+    const expKW = ['EXPERIENCE','EMPLOYMENT','WORK HISTORY','CAREER'];
+    const skKW = ['SKILL','TECHNICAL','COMPETENC'];
+    let expStart = -1, skStart = -1;
+    for (const kw of expKW) { const i = text.toUpperCase().indexOf(kw); if(i>-1 && i<text.length*0.5){expStart=i;break;} }
+    for (const kw of skKW) { const i = text.toUpperCase().indexOf(kw); if(i>-1){skStart=i;break;} }
+    const header = text.substring(0, Math.min(800, expStart>0?expStart:800));
+    const exp = expStart>-1 ? text.substring(expStart, Math.min(expStart+3000,text.length)) : text.substring(800,3800);
+    const sk = skStart>-1 ? text.substring(skStart, Math.min(skStart+700,text.length)) : '';
+    return (header+'\n'+exp+'\n'+sk).substring(0,4500);
+  }
+
+  const resumeChunk = getOptimalChunk(resume);
+  const resumeFull = resume.substring(0, 8000); // Full resume for JD fabrication
+  const jdFull = jd ? jd.substring(0, 3000) : '';
+
+  const fraudPrompt = `You are a senior technical recruiter and fraud investigator. Analyze this resume for fraud signals. Return ONLY valid JSON.
 
 RESUME:
-${resume}
-${jd?'\nJOB DESCRIPTION:\n'+jd:''}
-${linkedin?'\nLinkedIn: '+linkedin:''}
+${resumeChunk}
+${linkedin ? '\nLinkedIn: '+linkedin : ''}
+Active signals: ${signals}
 
-Active signals to check: ${signals}
+Return this JSON (fill every dimension):
+{"overallScore":0,"overallRisk":"LOW","summary":"2 sentences","dimensions":{"jd_fabrication":{"score":0,"risk":"LOW","flags":[],"notes":"Analyzed separately"},"proxy_risk":{"score":0,"risk":"LOW","flags":[],"notes":""},"ai_resume":{"score":0,"risk":"LOW","flags":[],"notes":""},"experience_fake":{"score":0,"risk":"LOW","flags":[],"notes":""},"visa_mismatch":{"score":0,"risk":"LOW","flags":[],"notes":""},"job_hopping":{"score":0,"risk":"LOW","flags":[],"notes":""},"skills_timeline":{"score":0,"risk":"LOW","flags":[],"notes":""},"location_mismatch":{"score":0,"risk":"LOW","flags":[],"notes":""},"body_shop":{"score":0,"risk":"LOW","flags":[],"notes":""},"salary_mismatch":{"score":0,"risk":"LOW","flags":[],"notes":""}},"interviewProbes":["q1","q2","q3","q4","q5"]}
+Only score: ${signals}. Unchecked: score:0,risk:"LOW",flags:[],notes:"Not checked". Use real names/dates.`;
 
-Return:
-{
-  "overallScore":<0-100>,
-  "overallRisk":"<HIGH|MEDIUM|LOW>",
-  "summary":"<2 sentence summary of biggest concerns>",
-  "dimensions":{
-    "jd_fabrication":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "proxy_risk":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "ai_resume":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "experience_fake":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "visa_mismatch":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "job_hopping":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "skills_timeline":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "location_mismatch":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "body_shop":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"},
-    "salary_mismatch":{"score":<0-100>,"risk":"<HIGH|MEDIUM|LOW>","flags":["<finding>","<finding>"],"notes":"<brief>"}
-  },
-  "interviewProbes":["<question>","<question>","<question>","<question>","<question>","<question>"]
-}
-Only score active signals (${signals}). For others set score:0,risk:"LOW",flags:[],notes:"Not checked".
-Be specific — flag exact inconsistencies found in this resume, not generic observations.`;
-
+  const jdPrompt = jd ? "You are a senior technical recruiter. Compare this full resume against this JD. Return ONLY valid JSON.\n\n" +
+    "FULL RESUME:\n" + resumeFull + "\n\nJOB DESCRIPTION:\n" + jdFull + "\n\n" +
+    "Detect JD fabrication and assess match quality.\n" +
+    '{"jd_fabrication":{"score":0,"risk":"LOW","flags":[],"notes":""},"jdMatch":{"overallMatch":"GOOD_MATCH","matchScore":0,"matchingSections":[],"missingRequirements":[],"submissionVerdict":"SUBMIT_WITH_CAUTION","submissionReason":"","clientReadyNotes":""}}' : null;
   try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
-    const data = await resp.json();
-    const raw = data.content.map(c=>c.text||'').join('');
-    const result = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const makeCall = (prompt, tokens) => fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:tokens,messages:[{role:"user",content:prompt}]})
+    });
+
+    const calls = [makeCall(fraudPrompt, 2000)];
+    if (jdPrompt) calls.push(makeCall(jdPrompt, 1500));
+    const responses = await Promise.all(calls);
+    const jsons = await Promise.all(responses.map(r => r.json()));
+
+    // Parse fraud result
+    if (jsons[0].error) { nav('screen'); alert('API Error: ' + jsons[0].error.message); return; }
+    const fraudRaw = jsons[0].content.map(c=>c.text||'').join('');
+    let result;
+    try {
+      result = JSON.parse(fraudRaw.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    } catch(e) {
+      let fixed = fraudRaw.replace(/\`\`\`json|\`\`\`/g,'').trim();
+      let opens = (fixed.match(/\{/g)||[]).length;
+      let closes = (fixed.match(/\}/g)||[]).length;
+      while(closes < opens){ fixed += '}'; closes++; }
+      try { result = JSON.parse(fixed); } catch(e2) {
+        const m = fraudRaw.match(/\{[\s\S]*"overallScore"[\s\S]*?\}/);
+        if(m) try { result = JSON.parse(m[0]); } catch(e3){}
+      }
+    }
+    if (!result) throw new Error('Could not parse analysis — please try again');
+
+    // Merge JD analysis
+    if (jdPrompt && jsons[1] && jsons[1].content) {
+      const jdRaw = jsons[1].content.map(c=>c.text||'').join('');
+      try {
+        let jdResult;
+        try { jdResult = JSON.parse(jdRaw.replace(/\`\`\`json|\`\`\`/g,'').trim()); }
+        catch(e) { const m = jdRaw.match(/\{[\s\S]*\}/); if(m) jdResult = JSON.parse(m[0]); }
+        if (jdResult) {
+          if (jdResult.jd_fabrication) {
+            result.dimensions.jd_fabrication = jdResult.jd_fabrication;
+            const scores = Object.values(result.dimensions).map(d=>d.score||0);
+            result.overallScore = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+            result.overallRisk = result.overallScore>=65?'HIGH':result.overallScore>=35?'MEDIUM':'LOW';
+          }
+          if (jdResult.jdMatch) result.jdMatch = jdResult.jdMatch;
+        }
+      } catch(e) { console.log('JD parse error:', e); }
+    }
+
     renderResult(result, name);
-  } catch(e) { nav('screen'); alert('Something went wrong. Please try again.'); }
+  } catch(e) {
+    nav('screen');
+    alert('Error: ' + e.message);
+  }
 }
 
 const DIM_META={
@@ -745,29 +1322,163 @@ function renderResult(r,name){
   });
   const probes=r.interviewProbes||[];
   if(probes.length){document.getElementById('rec-box').style.display='block';document.getElementById('rec-list').innerHTML=probes.map(p=>`<li>${p}</li>`).join('');}
-  history.unshift({name,score,risk:r.overallRisk,time:new Date().toLocaleTimeString(),result:r});
+  history.unshift({name,score,risk:r.overallRisk,time:new Date().toLocaleTimeString(),result:r,resumeText:resume.substring(0,5000)});
   renderHistory();
+  // Auto-save to localStorage
+  saveCandidate(name, score, r.overallRisk, r, resume.substring(0,5000));
+  if(r.jdMatch){
+    renderJdMatch(r.jdMatch);
+    // Scroll to JD match box after a short delay
+    setTimeout(() => {
+      const box = document.getElementById('jd-match-box');
+      if(box && box.style.display !== 'none') {
+        box.scrollIntoView({behavior:'smooth', block:'nearest'});
+      }
+    }, 500);
+  } else {
+    const b = document.getElementById('jd-match-box');
+    if(b) b.style.display = 'none';
+  }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-result').classList.add('active');
   document.querySelector('[data-screen="screen"]').classList.add('active');
 }
 
+function renderJdMatch(jd){
+  const box=document.getElementById('jd-match-box');
+  if(!jd||!box){return;}
+  const vc=jd.submissionVerdict==='RECOMMEND_SUBMIT'?'var(--green)':jd.submissionVerdict==='SUBMIT_WITH_CAUTION'?'var(--amber)':'var(--accent2)';
+  const vbg=jd.submissionVerdict==='RECOMMEND_SUBMIT'?'rgba(34,197,94,0.07)':jd.submissionVerdict==='SUBMIT_WITH_CAUTION'?'rgba(245,158,11,0.07)':'rgba(255,77,77,0.07)';
+  const vb=jd.submissionVerdict==='RECOMMEND_SUBMIT'?'rgba(34,197,94,0.25)':jd.submissionVerdict==='SUBMIT_WITH_CAUTION'?'rgba(245,158,11,0.25)':'rgba(255,77,77,0.25)';
+  const vi=jd.submissionVerdict==='RECOMMEND_SUBMIT'?'ti-circle-check':jd.submissionVerdict==='SUBMIT_WITH_CAUTION'?'ti-alert-triangle':'ti-circle-x';
+  const vl=jd.submissionVerdict==='RECOMMEND_SUBMIT'?'✅ Recommend Submit':jd.submissionVerdict==='SUBMIT_WITH_CAUTION'?'⚠️ Submit with Caution':'❌ Do Not Submit';
+  const mc=jd.matchScore>=70?'var(--green)':jd.matchScore>=45?'var(--amber)':'var(--accent2)';
+  box.innerHTML=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;"><i class="ti ti-clipboard-check"></i> JD Match & Submission Recommendation</div>
+      <div style="text-align:center;"><span style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">MATCH</span><br><span style="font-size:22px;font-weight:800;color:${mc};">${jd.matchScore}</span></div>
+    </div>
+    <div style="margin:12px;padding:12px 14px;background:${vbg};border:1px solid ${vb};border-radius:10px;">
+      <div style="font-size:15px;font-weight:800;color:${vc};margin-bottom:5px;"><i class="ti ${vi}"></i> ${vl}</div>
+      <div style="font-size:13px;line-height:1.6;">${jd.submissionReason||''}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px 12px;">
+      <div style="background:var(--surface2);border-radius:9px;padding:12px;">
+        <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--green);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;"><i class="ti ti-circle-check"></i> What Matches</div>
+        ${(jd.matchingSections||[]).map(m=>`<div style="display:flex;gap:6px;margin-bottom:5px;font-size:12px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--green);margin-top:5px;flex-shrink:0;"></div><span>${m}</span></div>`).join('')}
+      </div>
+      <div style="background:var(--surface2);border-radius:9px;padding:12px;">
+        <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--amber);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;"><i class="ti ti-alert-triangle"></i> Missing</div>
+        ${(jd.missingRequirements||[]).length?
+          (jd.missingRequirements||[]).map(m=>`<div style="display:flex;gap:6px;margin-bottom:5px;font-size:12px;"><div style="width:5px;height:5px;border-radius:50%;background:var(--amber);margin-top:5px;flex-shrink:0;"></div><span>${m}</span></div>`).join('')
+          :'<div style="font-size:12px;color:var(--green);">No gaps found ✅</div>'}
+      </div>
+    </div>
+    ${jd.clientReadyNotes?`<div style="margin:0 12px 12px;padding:11px 13px;background:rgba(232,255,71,0.04);border:1px solid rgba(232,255,71,0.15);border-radius:9px;"><div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--accent);letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px;"><i class="ti ti-send"></i> Notes for Client Submission</div><div style="font-size:12px;color:var(--muted);line-height:1.7;">${jd.clientReadyNotes}</div></div>`:''}
+  </div>`;
+  box.style.display='block';
+}
+
 // ── ID VERIFY ──
 let idFileData=null,idFileMime=null;
-function handleIdFile(evt){
-  const file=evt.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const dataUrl=e.target.result;
-    idFileMime=file.type||'image/jpeg';
-    idFileData=dataUrl.split(',')[1];
-    const preview=document.getElementById('id-preview');
-    if(file.type.startsWith('image/')){preview.innerHTML=`<img src="${dataUrl}" class="preview-thumb" alt="Doc">`;}
-    else{preview.innerHTML=`<div class="preview-doc"><i class="ti ti-file-type-pdf"></i>${file.name.substring(0,10)}…</div>`;}
-    document.getElementById('id-btn').disabled=false;
-  };
-  reader.readAsDataURL(file);
+async function handleIdFile(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const preview = document.getElementById('id-preview');
+  const btn = document.getElementById('id-btn');
+  const fileName = file.name.toLowerCase();
+  
+  preview.innerHTML = '<div class="preview-doc"><i class="ti ti-loader" style="color:var(--amber);font-size:20px;"></i><span style="font-size:9px;color:var(--amber);">Loading...</span></div>';
+
+  // IMAGE FILES - jpg, jpeg, png, gif, webp
+  if(file.type.startsWith('image/') || fileName.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const dataUrl = e.target.result;
+      if(fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) idFileMime = 'image/jpeg';
+      else if(fileName.endsWith('.png')) idFileMime = 'image/png';
+      else if(fileName.endsWith('.gif')) idFileMime = 'image/gif';
+      else if(fileName.endsWith('.webp')) idFileMime = 'image/webp';
+      else idFileMime = 'image/jpeg';
+      idFileData = dataUrl.split(',')[1];
+      preview.innerHTML = '<img src="' + dataUrl + '" class="preview-thumb" alt="Doc">';
+      btn.disabled = false;
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+  
+  // PDF FILES - convert first page to PNG using PDF.js
+  if(fileName.endsWith('.pdf')) {
+    try {
+      // Load PDF.js worker dynamically if not set
+      if(typeof pdfjsLib === 'undefined') {
+        // Try loading it dynamically
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      
+      // Set worker source
+      if(typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      } else {
+        throw new Error('PDF library could not be loaded. Please try JPG or PNG.');
+      }
+      
+      preview.innerHTML = '<div class="preview-doc"><i class="ti ti-loader" style="color:var(--amber);font-size:20px;"></i><span style="font-size:9px;color:var(--amber);">Converting PDF...</span></div>';
+      
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument({data: new Uint8Array(arrayBuffer)});
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(1);
+      const scale = 2.0;
+      const viewport = page.getViewport({scale});
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({canvasContext: ctx, viewport}).promise;
+      const dataUrl = canvas.toDataURL('image/png');
+      idFileMime = 'image/png';
+      idFileData = dataUrl.split(',')[1];
+      preview.innerHTML = '<img src="' + dataUrl + '" class="preview-thumb" alt="PDF page 1">';
+      const info = document.createElement('div');
+      info.style.cssText = 'font-size:10px;color:var(--green);margin-top:4px;';
+      info.textContent = '✓ PDF converted to image (' + pdf.numPages + ' page' + (pdf.numPages>1?'s':'') + ')';
+      preview.after(info);
+      btn.disabled = false;
+    } catch(e) {
+      console.error('PDF error:', e);
+      preview.innerHTML = '<div class="preview-doc"><i class="ti ti-alert-circle" style="color:var(--accent2);font-size:20px;"></i><span style="font-size:9px;color:var(--accent2);">Error</span></div>';
+      alert('PDF error: ' + e.message + '\n\nTip: Save the document as JPG or PNG for best results.');
+    }
+    return;
+  }
+  
+  // WORD FILES - extract text
+  if(fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
+    try {
+      if(typeof mammoth === 'undefined') throw new Error('Word reader not loaded');
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({arrayBuffer});
+      idFileData = btoa(unescape(encodeURIComponent(result.value.substring(0, 3000))));
+      idFileMime = 'text/plain';
+      preview.innerHTML = '<div class="preview-doc" style="width:80px;"><i class="ti ti-file-word" style="color:#4daaff;font-size:20px;"></i><span style="font-size:9px;color:var(--green);">loaded</span></div>';
+      btn.disabled = false;
+    } catch(e) {
+      alert('Could not read Word file. Please use JPG, PNG or PDF.');
+    }
+    return;
+  }
+  
+  alert('Unsupported file. Please use JPG, PNG, PDF or Word.');
 }
+
 
 async function runIdCheck(){
   if(!idFileData){alert('Please upload a document first.');return;}
@@ -775,14 +1486,12 @@ async function runIdCheck(){
   const candName=document.getElementById('id-name').value.trim();
   const notes=document.getElementById('id-notes').value.trim();
   showLoading('id-loading','il',5);
-  const textPrompt=`You are an expert in government document verification and immigration fraud detection. Analyze this ${docType} image for authenticity.
-${candName?'Name provided: '+candName:''}
-${notes?'Recruiter observations: '+notes:''}
-Check: layout, fonts, security features, date consistency, ID/case number format, photo area integrity, digital manipulation artifacts.
-Return ONLY valid JSON:
-{"verdict":"<LIKELY_AUTHENTIC|NEEDS_REVIEW|SUSPICIOUS|CANNOT_DETERMINE>","confidenceScore":<0-100>,"documentType":"<what this appears to be>","summary":"<2 sentence summary>","positiveSignals":["<finding>"],"redFlags":["<concern>"],"securityFeatures":"<present|partial|not_visible|missing>","dateConsistency":"<consistent|inconsistent|not_visible>","formatMatch":"<matches|partial|does_not_match|cannot_determine>","recommendation":"<specific action>"}`;
-  try{
-    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1000,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:idFileMime,data:idFileData}},{type:"text",text:textPrompt}]}]})});
+  const textPrompt = "You are an expert in government document verification. Analyze this " + docType + " for authenticity.\n\n" +
+    (candName ? "Name provided: " + candName + "\n" : "") +
+    (notes ? "Recruiter observations: " + notes + "\n" : "") +
+    "Check layout, fonts, security features, dates, ID numbers, photo integrity.\n" +
+    "Return ONLY valid JSON: {\"verdict\":\"LIKELY_AUTHENTIC|NEEDS_REVIEW|SUSPICIOUS|CANNOT_DETERMINE\",\"confidenceScore\":0,\"documentType\":\"\",\"summary\":\"\",\"positiveSignals\":[\"\"],\"redFlags\":[\"\"],\"phonePhotoLimitations\":[\"\"],\"securityFeatures\":\"\",\"dateConsistency\":\"\",\"formatMatch\":\"\",\"recommendation\":\"\",\"imageQuality\":\"\"}";
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1000,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:idFileMime,data:idFileData}},{type:"text",text:textPrompt}]}]})});
     const data=await resp.json();
     const raw=data.content.map(c=>c.text||'').join('');
     renderIdResult(JSON.parse(raw.replace(/```json|```/g,'').trim()));
@@ -813,14 +1522,12 @@ async function runQuestions(){
   const concerns=document.getElementById('q-concerns').value.trim();
   if(!jd){alert('Please paste a job description first.');return;}
   showLoading('q-loading','ql',5);
-  const prompt=`You are a senior technical recruiter. Generate an interview question set for this role.
-JOB DESCRIPTION: ${jd}
-Level: ${level} | Focus: ${focus}${concerns?'\nConcerns: '+concerns:''}
-Return ONLY valid JSON:
-{"roleTitle":"<title>","techStack":["<tech>","<tech>","<tech>"],"categories":[{"name":"Technical Depth","color":"accent3","icon":"ti-code","description":"Questions that separate people who did the work from people who read about it","questions":["<q>","<q>","<q>","<q>","<q>"]},{"name":"Real Experience Verification","color":"amber","icon":"ti-timeline","description":"Questions to surface specific verifiable details only real experience provides","questions":["<q>","<q>","<q>","<q>"]},{"name":"Proxy / Fraud Detection","color":"accent2","icon":"ti-shield-search","description":"Questions a proxy or memorized-answer candidate will struggle with","questions":["<q>","<q>","<q>","<q>"]},{"name":"Behavioral / Situational","color":"green","icon":"ti-users","description":"STAR-format questions for judgment, collaboration, and culture fit","questions":["<q>","<q>","<q>","<q>"]}],"redFlagAnswers":["<pattern>","<pattern>","<pattern>"],"goodSignalAnswers":["<pattern>","<pattern>","<pattern>"]}
-Make questions specific to the actual tech stack and responsibilities. Proxy detection questions must be things only someone who genuinely did the work would answer naturally.`;
-  try{
-    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+  const prompt = "You are a senior technical recruiter. Generate an interview question set for this role.\n\n" +
+    "JOB DESCRIPTION: " + jd + "\n\n" +
+    "Level: " + level + " | Focus: " + focus + (concerns ? "\nConcerns: " + concerns : "") + "\n\n" +
+    "Return ONLY valid JSON: {\"roleTitle\":\"\",\"techStack\":[\"\"],\"categories\":[{\"name\":\"Technical Depth\",\"color\":\"accent3\",\"icon\":\"ti-code\",\"description\":\"\",\"questions\":[\"\"]},{\"name\":\"Real Experience Verification\",\"color\":\"amber\",\"icon\":\"ti-timeline\",\"description\":\"\",\"questions\":[\"\"]},{\"name\":\"Proxy / Fraud Detection\",\"color\":\"accent2\",\"icon\":\"ti-shield-search\",\"description\":\"\",\"questions\":[\"\"]},{\"name\":\"Behavioral\",\"color\":\"green\",\"icon\":\"ti-users\",\"description\":\"\",\"questions\":[\"\",\"\",\"\",\"\"]}],\"redFlagAnswers\":[\"\"],\"goodSignalAnswers\":[\"\"]}" +
+    "\n\nMake questions specific to the tech stack. Proxy questions must be things only someone who did the work can answer.";
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
     const data=await resp.json();
     const raw=data.content.map(c=>c.text||'').join('');
     renderQuestions(JSON.parse(raw.replace(/```json|```/g,'').trim()));
@@ -863,6 +1570,72 @@ function copyReport(){
   txt+='INTERVIEW PROBES:\n';(r.interviewProbes||[]).forEach((p,i)=>txt+=`${i+1}. ${p}\n`);
   navigator.clipboard.writeText(txt).then(()=>alert('Report copied!'));
 }
+
+// ══════════════════════════════════════════
+// FEEDBACK
+// ══════════════════════════════════════════
+function setRating(n) {
+  document.getElementById('fb-rating').value = n;
+  for(let i=1;i<=5;i++){
+    const star = document.getElementById('fb-star-'+i);
+    star.textContent = i <= n ? '★' : '☆';
+    star.style.color = i <= n ? '#f59e0b' : 'var(--muted)';
+  }
+}
+
+function submitFeedback() {
+  const name = document.getElementById('fb-name').value.trim();
+  const role = document.getElementById('fb-role').value.trim();
+  const rating = document.getElementById('fb-rating').value;
+  const good = document.getElementById('fb-good').value.trim();
+  const improve = document.getElementById('fb-improve').value.trim();
+  const feature = document.getElementById('fb-feature').value.trim();
+  const other = document.getElementById('fb-other').value.trim();
+
+  if (!good && !improve && !feature) {
+    alert('Please fill in at least one feedback field before submitting.');
+    return;
+  }
+
+  // Build feedback report
+  const feedback = {
+    timestamp: new Date().toLocaleString(),
+    name: name || 'Anonymous',
+    role: role || 'Not specified',
+    rating: rating ? rating + '/5' : 'Not rated',
+    whatWorksWell: good || 'Not provided',
+    needsImprovement: improve || 'Not provided',
+    featureRequest: feature || 'Not provided',
+    otherComments: other || 'Not provided'
+  };
+
+  // Save to localStorage
+  try {
+    const existing = JSON.parse(localStorage.getItem('verahire_feedback') || '[]');
+    existing.push(feedback);
+    localStorage.setItem('verahire_feedback', JSON.stringify(existing));
+  } catch(e) {}
+
+  // Copy feedback to clipboard for easy sharing
+  const feedbackText = Object.entries(feedback).map(([k,v]) => k.toUpperCase() + ': ' + v).join('\n');
+  try { navigator.clipboard.writeText(feedbackText); } catch(e) {}
+
+  // Show thank you
+  document.getElementById('fb-submit-btn').style.display = 'none';
+  document.getElementById('fb-result').style.display = 'block';
+
+  // Reset form
+  ['fb-name','fb-role','fb-good','fb-improve','fb-feature','fb-other'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('fb-rating').value = '';
+  for(let i=1;i<=5;i++){
+    const s = document.getElementById('fb-star-'+i);
+    if(s){ s.textContent='☆'; s.style.color='var(--muted)'; }
+  }
+}
+
 </script>
 </body>
 </html>
@@ -949,7 +1722,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="card-title"><i class="ti ti-user"></i> Interview details</div>
         <div class="two-col" style="margin-bottom:10px;">
           <div>
-            <span class="field-label">CANDIDATE NAME</span>
+            <span class="field-label">CANDIDATE NAME <span style="color:var(--muted);font-size:9px;">(optional)</span></span>
             <input class="input-field" id="post-name" placeholder="Candidate name" type="text">
           </div>
           <div>
@@ -1304,4 +2077,302 @@ function copyPostReport(name, role, score, risk, verdict) {
   if (notes) txt += `\nNotes:\n${notes}\n`;
   navigator.clipboard.writeText(txt).then(() => alert('Report copied!'));
 }
+
+// ══════════════════════════════════════════
+// CANDIDATE COMPARISON
+// ══════════════════════════════════════════
+async function runComparison() {
+  const jd = document.getElementById('cmp-jd').value.trim();
+  const name1 = document.getElementById('cmp-name1').value.trim() || 'Candidate 1';
+  const name2 = document.getElementById('cmp-name2').value.trim() || 'Candidate 2';
+  const name3 = document.getElementById('cmp-name3').value.trim();
+  const r1 = document.getElementById('cmp-resume1').value.trim();
+  const r2 = document.getElementById('cmp-resume2').value.trim();
+  const r3 = document.getElementById('cmp-resume3').value.trim();
+
+  if (!jd) { alert('Please paste the job description first.'); return; }
+  if (!r1 || !r2) { alert('Please paste at least 2 candidate resumes.'); return; }
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-cmp-loading').classList.add('active');
+
+  // Get pre-screened fraud data if available
+  const fraud1 = document.getElementById('cmp-fraud1').value ? JSON.parse(document.getElementById('cmp-fraud1').value) : null;
+  const fraud2 = document.getElementById('cmp-fraud2').value ? JSON.parse(document.getElementById('cmp-fraud2').value) : null;
+  const fraud3 = document.getElementById('cmp-fraud3') && document.getElementById('cmp-fraud3').value ? JSON.parse(document.getElementById('cmp-fraud3').value) : null;
+
+  const candidates = [
+    { name: name1, resume: r1.substring(0, 3000), fraud: fraud1 },
+    { name: name2, resume: r2.substring(0, 3000), fraud: fraud2 },
+    ...(r3 ? [{ name: name3 || 'Candidate 3', resume: r3.substring(0, 3000), fraud: fraud3 }] : [])
+  ];
+
+  const candidateBlocks = candidates.map((c, i) => 
+    "CANDIDATE " + (i+1) + " — " + c.name + ":\n" + c.resume + 
+    (c.fraud ? "\n[Pre-screened: Score=" + c.fraud.score + ", Risk=" + c.fraud.risk + "]" : "")
+  ).join("\n\n---\n\n");
+
+  const prompt = "You are a senior technical recruiter. Compare these " + candidates.length + " candidates for the same role. Return ONLY valid JSON.\n\n" +
+    "JOB DESCRIPTION:\n" + jd.substring(0, 2000) + "\n\n" + candidateBlocks +
+    "\n\nAnalyze each candidate: JD match, fraud risk, overall recommendation.\n\n" +
+    '{"ranking":[{"rank":1,"name":"","matchScore":0,"fraudRisk":"LOW","fraudScore":0,"verdict":"RECOMMEND_SUBMIT","topStrengths":["","",""],"topConcerns":["",""],"submissionNote":""},{"rank":2,"name":"","matchScore":0,"fraudRisk":"LOW","fraudScore":0,"verdict":"RECOMMEND_SUBMIT","topStrengths":["","",""],"topConcerns":["",""],"submissionNote":""},{"rank":3,"name":"","matchScore":0,"fraudRisk":"LOW","fraudScore":0,"verdict":"RECOMMEND_SUBMIT","topStrengths":["","",""],"topConcerns":["",""],"submissionNote":""}],"recommendation":"","clientNote":""}';
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": sessionStorage.getItem('vh_key'), "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
+    });
+    const data = await resp.json();
+    if (data.error) { nav('compare'); alert('API Error: ' + data.error.message); return; }
+    const raw = data.content.map(c => c.text || '').join('');
+    let result;
+    try { result = JSON.parse(raw.replace(/```json|```/g, '').trim()); }
+    catch(e) { const m = raw.match(/\{[\s\S]*\}/); if(m) result = JSON.parse(m[0]); }
+    if (!result) throw new Error('Could not parse comparison');
+    renderComparison(result);
+  } catch(e) { nav('compare'); alert('Error: ' + e.message); }
+}
+
+function renderComparison(r) {
+  nav('compare');
+  const rankColors = ['#e8ff47', '#4daaff', '#22c55e'];
+  const rankLabels = ['🥇 Submit First', '🥈 Submit Second', '🥉 Submit Third'];
+  const verdictColors = { RECOMMEND_FIRST: 'var(--green)', RECOMMEND: 'var(--green)', SUBMIT_WITH_CAUTION: 'var(--amber)', DO_NOT_SUBMIT: 'var(--accent2)' };
+
+  let html = `<div style="margin-bottom:14px;padding:14px;background:rgba(232,255,71,0.04);border:1px solid rgba(232,255,71,0.15);border-radius:12px;">
+    <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;"><i class="ti ti-trophy"></i> Overall Recommendation</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--text);">${r.recommendation || ''}</div>
+  </div>`;
+
+  (r.ranking || []).forEach((c, i) => {
+    const rc = rankColors[i] || '#666';
+    const vc = verdictColors[c.verdict] || 'var(--muted)';
+    const fraudCls = c.fraudRisk === 'HIGH' ? 'var(--accent2)' : c.fraudRisk === 'MEDIUM' ? 'var(--amber)' : 'var(--green)';
+
+    html += `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;border-left:3px solid ${rc};">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div>
+          <div style="font-size:11px;color:${rc};font-family:'IBM Plex Mono',monospace;font-weight:600;margin-bottom:3px;">${rankLabels[i] || ''}</div>
+          <div style="font-size:18px;font-weight:800;">${c.name}</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:${vc};">${c.matchScore}</div>
+          <div style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;">JD MATCH</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <span style="background:${vc}22;color:${vc};border:1px solid ${vc}44;font-size:10px;font-family:'IBM Plex Mono',monospace;padding:3px 9px;border-radius:20px;">${c.verdict?.replace(/_/g,' ')}</span>
+        <span style="background:${fraudCls}22;color:${fraudCls};border:1px solid ${fraudCls}44;font-size:10px;font-family:'IBM Plex Mono',monospace;padding:3px 9px;border-radius:20px;">FRAUD: ${c.fraudRisk} (${c.fraudScore})</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div><div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--green);margin-bottom:5px;">STRENGTHS</div>${(c.topStrengths||[]).map(s=>`<div style="font-size:12px;color:var(--text);margin-bottom:3px;">✓ ${s}</div>`).join('')}</div>
+        <div><div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--amber);margin-bottom:5px;">CONCERNS</div>${(c.topConcerns||[]).map(s=>`<div style="font-size:12px;color:var(--muted);margin-bottom:3px;">△ ${s}</div>`).join('')}</div>
+      </div>
+      ${c.submissionNote ? `<div style="font-size:12px;color:var(--accent);padding:8px 10px;background:rgba(232,255,71,0.04);border-radius:7px;border:1px solid rgba(232,255,71,0.15);">→ ${c.submissionNote}</div>` : ''}
+    </div>`;
+  });
+
+  if (r.clientNote) {
+    html += `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;"><i class="ti ti-send"></i> Client Submission Note</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.7;">${r.clientNote}</div>
+    </div>`;
+  }
+
+  html += `<div class="action-row"><button class="btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('cmp-result').innerText).then(()=>alert('Comparison copied!'))"><i class="ti ti-copy"></i> Copy Report</button></div>`;
+  document.getElementById('cmp-result').innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// CLIENT SUBMISSION EMAIL
+// ══════════════════════════════════════════
+async function runSubmissionEmail() {
+  const candName = document.getElementById('sub-cand-name').value.trim();
+  const role = document.getElementById('sub-role').value.trim();
+  const client = document.getElementById('sub-client').value.trim();
+  const hm = document.getElementById('sub-hm').value.trim();
+  const rate = document.getElementById('sub-rate').value.trim();
+  const avail = document.getElementById('sub-avail').value.trim();
+  const resume = document.getElementById('sub-resume').value.trim();
+  const jd = document.getElementById('sub-jd').value.trim();
+  const tone = document.getElementById('sub-tone').value;
+
+  if (!candName || !role || !client || !resume) { alert('Please fill in candidate name, role, client name and resume.'); return; }
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-sub-loading').classList.add('active');
+
+  const prompt = "You are a senior technical recruiter writing a candidate submission email. Write a professional email.\n\n" +
+    "Candidate: " + candName + "\n" +
+    "Role: " + role + "\n" +
+    "Client: " + client + "\n" +
+    (hm ? "Hiring Manager: " + hm + "\n" : "") +
+    (rate ? "Rate/Salary: " + rate + "\n" : "") +
+    (avail ? "Availability: " + avail + "\n" : "") +
+    "Tone: " + tone + "\n\n" +
+    "CANDIDATE RESUME/HIGHLIGHTS:\n" + resume.substring(0, 3000) + "\n\n" +
+    (jd ? "JOB DESCRIPTION:\n" + jd.substring(0, 1500) + "\n\n" : "") +
+    "Write a complete submission email. Return ONLY valid JSON:\n" +
+    '{"subject":"<subject>","greeting":"<Hi Name,>","body":"<full email body>","keyHighlights":["<highlight>","<highlight>","<highlight>"],"suggestedNextStep":"<next step>"}' +
+    "\n\nMake it warm, specific, professional. Reference actual skills from the resume.";
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": sessionStorage.getItem('vh_key'), "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 1200, messages: [{ role: "user", content: prompt }] })
+    });
+    const data = await resp.json();
+    if (data.error) { nav('submit'); alert('API Error: ' + data.error.message); return; }
+    const raw = data.content.map(c => c.text || '').join('');
+    let result;
+    try { result = JSON.parse(raw.replace(/```json|```/g, '').trim()); }
+    catch(e) { const m = raw.match(/\{[\s\S]*\}/); if(m) result = JSON.parse(m[0]); }
+    if (!result) throw new Error('Could not generate email');
+    renderSubmissionEmail(result, candName, role, client);
+  } catch(e) { nav('submit'); alert('Error: ' + e.message); }
+}
+
+function renderSubmissionEmail(r, candName, role, client) {
+  nav('submit');
+  const fullEmail = 'Subject: ' + (r.subject||'') + '\n\n' + (r.greeting||'') + '\n\n' + (r.body||'');
+
+  let html = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;">';
+  html += '<div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">';
+  html += '<div style="font-size:11px;font-family:IBM Plex Mono,monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;"><i class="ti ti-mail"></i> Submission Email — ' + candName + ' → ' + client + '</div>';
+  html += '<button class="btn-sm" onclick="navigator.clipboard.writeText(' + "'" + fullEmail.replace(/'/g,"\\'") + "'" + ').then(function(){alert(' + "'Email copied!'" + ')})"><i class="ti ti-copy"></i> Copy Email</button>';
+  html += '</div><div style="padding:16px 18px;">';
+  html += '<div style="background:var(--surface2);border-radius:9px;padding:12px;margin-bottom:12px;">';
+  html += '<div style="font-size:10px;font-family:IBM Plex Mono,monospace;color:var(--muted);letter-spacing:.06em;margin-bottom:6px;">SUBJECT LINE</div>';
+  html += '<div style="font-size:14px;font-weight:700;color:var(--accent);">' + (r.subject||'') + '</div></div>';
+  html += '<div style="background:var(--surface2);border-radius:9px;padding:14px;margin-bottom:12px;">';
+  html += '<div style="font-size:10px;font-family:IBM Plex Mono,monospace;color:var(--muted);letter-spacing:.06em;margin-bottom:8px;">EMAIL BODY</div>';
+  html += '<div style="font-size:13px;line-height:1.8;white-space:pre-line;">' + (r.greeting||'') + '\n\n' + (r.body||'') + '</div></div>';
+  if ((r.keyHighlights||[]).length) {
+    html += '<div style="margin-bottom:12px;"><div style="font-size:10px;font-family:IBM Plex Mono,monospace;color:var(--green);letter-spacing:.06em;margin-bottom:8px;"><i class="ti ti-star"></i> KEY HIGHLIGHTS</div>';
+    (r.keyHighlights||[]).forEach(function(h){ html += '<div style="display:flex;gap:7px;margin-bottom:5px;font-size:12px;"><div style="color:var(--green);">✓</div><span>' + h + '</span></div>'; });
+    html += '</div>';
+  }
+  if (r.suggestedNextStep) {
+    html += '<div style="padding:10px 12px;background:rgba(232,255,71,0.04);border:1px solid rgba(232,255,71,0.15);border-radius:8px;">';
+    html += '<div style="font-size:10px;font-family:IBM Plex Mono,monospace;color:var(--accent);letter-spacing:.06em;margin-bottom:5px;"><i class="ti ti-arrow-right"></i> SUGGESTED NEXT STEP</div>';
+    html += '<div style="font-size:12px;color:var(--muted);">' + r.suggestedNextStep + '</div></div>';
+  }
+  html += '</div></div>';
+
+  document.getElementById('sub-result').innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// MARKET INTELLIGENCE
+// ══════════════════════════════════════════
+async function runMarketIntelligence() {
+  const title = document.getElementById('mkt-title').value.trim();
+  const location = document.getElementById('mkt-location').value.trim();
+  const level = document.getElementById('mkt-level').value;
+  const type = document.getElementById('mkt-type').value;
+  const skills = document.getElementById('mkt-skills').value.trim();
+  const purpose = document.getElementById('mkt-purpose').value;
+
+  console.log('Market Intel triggered - title:', title, 'location:', location);
+  
+  if (!title || !location) { alert('Please enter a job title and location.'); return; }
+  
+  // Check API key
+  const apiKey = sessionStorage.getItem('vh_key');
+  if (!apiKey) { alert('No API key found. Please log out and log back in with your API key.'); return; }
+
+  console.log('Switching to loading screen...');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const loadingScreen = document.getElementById('screen-mkt-loading');
+  if (loadingScreen) {
+    loadingScreen.classList.add('active');
+    console.log('Loading screen activated');
+  } else {
+    console.error('screen-mkt-loading NOT FOUND!');
+    alert('Loading screen missing - please refresh and try again');
+    return;
+  }
+
+  const purposeMap = {
+    client_call: 'preparing for a client intake call — include talking points to educate the client on market realities',
+    candidate_offer: 'advising a candidate on their rate — include what they should ask for and what is realistic',
+    sourcing: 'understanding where to find candidates — include specific sourcing channels and strategies',
+    general: 'general market understanding'
+  };
+
+  const prompt = "You are a senior technical recruiting market expert. Provide a market intelligence brief for this role. Return ONLY valid JSON with no extra text.\n\n" +
+    "Role: " + title + "\nLevel: " + level + "\nLocation: " + location + "\nType: " + type + (skills ? "\nSkills: " + skills : "") + "\nPurpose: " + (purposeMap[purpose] || "general") + "\nDate: May 2026\n\n" +
+    'Return this JSON structure: {"roleTitle":"","location":"","marketDemand":"HIGH|MEDIUM|LOW","candidateAvailability":"SCARCE|MODERATE|ABUNDANT","salaryRange":{"min":"","max":"","midpoint":"","note":""},"contractRate":{"min":"","max":"","note":""},"timeToFill":"","topSourcingChannels":["","",""],"keySkillsInDemand":["","",""],"marketTrends":["","",""],"clientTalkingPoints":["","",""],"candidateTalkingPoints":["","",""],"redFlags":["",""],"summary":""}';
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": sessionStorage.getItem('vh_key'), "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
+    });
+    const data = await resp.json();
+    if (data.error) { nav('market'); alert('API Error: ' + data.error.message); return; }
+    const raw = data.content.map(c => c.text || '').join('');
+    let result;
+    try { result = JSON.parse(raw.replace(/```json|```/g, '').trim()); }
+    catch(e) { const m = raw.match(/\{[\s\S]*\}/); if(m) result = JSON.parse(m[0]); }
+    if (!result) throw new Error('Could not generate brief');
+    renderMarketBrief(result);
+  } catch(e) { 
+    nav('market'); 
+    console.error('Market error:', e);
+    alert('Error: ' + e.message + ' — Please try again.'); 
+  }
+}
+
+function renderMarketBrief(r) {
+  nav('market');
+  const dc = r.marketDemand === 'HIGH' ? 'var(--accent2)' : r.marketDemand === 'MEDIUM' ? 'var(--amber)' : 'var(--green)';
+  const ac = r.candidateAvailability === 'SCARCE' ? 'var(--accent2)' : r.candidateAvailability === 'MODERATE' ? 'var(--amber)' : 'var(--green)';
+  const sr = r.salaryRange || {};
+  const cr = r.contractRate || {};
+
+  let html = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;">';
+  html += '<div style="padding:16px 18px;border-bottom:1px solid var(--border);">';
+  html += '<div style="font-size:20px;font-weight:800;margin-bottom:4px;">' + (r.roleTitle||'') + ' — ' + (r.location||'') + '</div>';
+  html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">';
+  html += '<span style="background:' + dc + '22;color:' + dc + ';border:1px solid ' + dc + '44;font-size:11px;font-family:IBM Plex Mono,monospace;padding:4px 10px;border-radius:20px;">DEMAND: ' + (r.marketDemand||'') + '</span>';
+  html += '<span style="background:' + ac + '22;color:' + ac + ';border:1px solid ' + ac + '44;font-size:11px;font-family:IBM Plex Mono,monospace;padding:4px 10px;border-radius:20px;">TALENT: ' + (r.candidateAvailability||'') + '</span>';
+  html += '<span style="background:rgba(77,170,255,0.1);color:var(--accent3);border:1px solid rgba(77,170,255,0.3);font-size:11px;font-family:IBM Plex Mono,monospace;padding:4px 10px;border-radius:20px;">TIME TO FILL: ' + (r.timeToFill||'') + '</span>';
+  html += '</div></div>';
+  html += '<div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;line-height:1.8;color:var(--muted);">' + (r.summary||'') + '</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);">';
+  html += '<div style="background:var(--surface);padding:14px 18px;"><div style="font-size:10px;color:var(--muted);margin-bottom:8px;">SALARY RANGE (FTE)</div>';
+  html += '<div style="font-size:22px;font-weight:800;color:var(--green);">' + (sr.min||'') + ' – ' + (sr.max||'') + '</div>';
+  html += '<div style="font-size:12px;color:var(--muted);margin-top:3px;">Midpoint: ' + (sr.midpoint||'') + '</div>';
+  html += '<div style="font-size:11px;color:var(--muted);margin-top:5px;font-style:italic;">' + (sr.note||'') + '</div></div>';
+  html += '<div style="background:var(--surface);padding:14px 18px;"><div style="font-size:10px;color:var(--muted);margin-bottom:8px;">CONTRACT RATE</div>';
+  html += '<div style="font-size:22px;font-weight:800;color:var(--accent3);">' + (cr.min||'') + ' – ' + (cr.max||'') + '</div>';
+  html += '<div style="font-size:11px;color:var(--muted);margin-top:5px;font-style:italic;">' + (cr.note||'') + '</div></div></div>';
+  html += '<div style="padding:14px 18px;">';
+  html += '<div style="margin-bottom:14px;"><div style="font-size:10px;color:var(--accent3);text-transform:uppercase;margin-bottom:8px;">Top Sourcing Channels</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:7px;">';
+  (r.topSourcingChannels||[]).forEach(function(s){ html += '<span style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;">' + s + '</span>'; });
+  html += '</div></div>';
+  html += '<div style="margin-bottom:14px;"><div style="font-size:10px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">Skills in Demand</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:7px;">';
+  (r.keySkillsInDemand||[]).forEach(function(s){ html += '<span style="background:rgba(232,255,71,0.08);border:1px solid rgba(232,255,71,0.2);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--accent);">' + s + '</span>'; });
+  html += '</div></div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">';
+  html += '<div style="background:var(--surface2);border-radius:9px;padding:12px;"><div style="font-size:10px;color:var(--amber);text-transform:uppercase;margin-bottom:8px;">Client Talking Points</div>';
+  (r.clientTalkingPoints||[]).forEach(function(p){ html += '<div style="font-size:12px;margin-bottom:6px;line-height:1.5;">→ ' + p + '</div>'; });
+  html += '</div>';
+  html += '<div style="background:var(--surface2);border-radius:9px;padding:12px;"><div style="font-size:10px;color:var(--green);text-transform:uppercase;margin-bottom:8px;">Candidate Talking Points</div>';
+  (r.candidateTalkingPoints||[]).forEach(function(p){ html += '<div style="font-size:12px;margin-bottom:6px;line-height:1.5;">→ ' + p + '</div>'; });
+  html += '</div></div>';
+  html += '<div style="margin-bottom:14px;"><div style="font-size:10px;color:var(--accent3);text-transform:uppercase;margin-bottom:8px;">Market Trends</div>';
+  (r.marketTrends||[]).forEach(function(t){ html += '<div style="display:flex;gap:7px;margin-bottom:5px;font-size:12px;"><div style="color:var(--accent3);">↗</div><span>' + t + '</span></div>'; });
+  html += '</div></div>';
+  html += '<div class="action-row" style="padding:0 18px 14px;"><button class="btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('mkt-result').innerText).then(function(){alert('Brief copied!')})"><i class="ti ti-copy"></i> Copy Brief</button></div>';
+  html += '</div>';
+
+  document.getElementById('mkt-result').innerHTML = html;
+  document.getElementById('mkt-result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 </script>
