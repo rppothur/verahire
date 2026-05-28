@@ -1491,7 +1491,8 @@ async function runIdCheck(){
     (notes ? "Recruiter observations: " + notes + "\n" : "") +
     "Check layout, fonts, security features, dates, ID numbers, photo integrity.\n" +
     "Return ONLY valid JSON: {\"verdict\":\"LIKELY_AUTHENTIC|NEEDS_REVIEW|SUSPICIOUS|CANNOT_DETERMINE\",\"confidenceScore\":0,\"documentType\":\"\",\"summary\":\"\",\"positiveSignals\":[\"\"],\"redFlags\":[\"\"],\"phonePhotoLimitations\":[\"\"],\"securityFeatures\":\"\",\"dateConsistency\":\"\",\"formatMatch\":\"\",\"recommendation\":\"\",\"imageQuality\":\"\"}";
-    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1000,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:idFileMime,data:idFileData}},{type:"text",text:textPrompt}]}]})});
+  try {
+    const resp=await fetchh("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1000,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:idFileMime,data:idFileData}},{type:"text",text:textPrompt}]}]})});
     const data=await resp.json();
     const raw=data.content.map(c=>c.text||'').join('');
     renderIdResult(JSON.parse(raw.replace(/```json|```/g,'').trim()));
@@ -1527,7 +1528,8 @@ async function runQuestions(){
     "Level: " + level + " | Focus: " + focus + (concerns ? "\nConcerns: " + concerns : "") + "\n\n" +
     "Return ONLY valid JSON: {\"roleTitle\":\"\",\"techStack\":[\"\"],\"categories\":[{\"name\":\"Technical Depth\",\"color\":\"accent3\",\"icon\":\"ti-code\",\"description\":\"\",\"questions\":[\"\"]},{\"name\":\"Real Experience Verification\",\"color\":\"amber\",\"icon\":\"ti-timeline\",\"description\":\"\",\"questions\":[\"\"]},{\"name\":\"Proxy / Fraud Detection\",\"color\":\"accent2\",\"icon\":\"ti-shield-search\",\"description\":\"\",\"questions\":[\"\"]},{\"name\":\"Behavioral\",\"color\":\"green\",\"icon\":\"ti-users\",\"description\":\"\",\"questions\":[\"\",\"\",\"\",\"\"]}],\"redFlagAnswers\":[\"\"],\"goodSignalAnswers\":[\"\"]}" +
     "\n\nMake questions specific to the tech stack. Proxy questions must be things only someone who did the work can answer.";
-    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
+  try {
+    const resp=await fetchh("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":sessionStorage.getItem('vh_key'),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-opus-4-6",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
     const data=await resp.json();
     const raw=data.content.map(c=>c.text||'').join('');
     renderQuestions(JSON.parse(raw.replace(/```json|```/g,'').trim()));
@@ -2273,57 +2275,94 @@ async function runMarketIntelligence() {
   const skills = document.getElementById('mkt-skills').value.trim();
   const purpose = document.getElementById('mkt-purpose').value;
 
-  console.log('Market Intel triggered - title:', title, 'location:', location);
-  
-  if (!title || !location) { alert('Please enter a job title and location.'); return; }
-  
-  // Check API key
-  const apiKey = sessionStorage.getItem('vh_key');
-  if (!apiKey) { alert('No API key found. Please log out and log back in with your API key.'); return; }
-
-  console.log('Switching to loading screen...');
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const loadingScreen = document.getElementById('screen-mkt-loading');
-  if (loadingScreen) {
-    loadingScreen.classList.add('active');
-    console.log('Loading screen activated');
-  } else {
-    console.error('screen-mkt-loading NOT FOUND!');
-    alert('Loading screen missing - please refresh and try again');
+  if (!title || !location) {
+    alert('Please enter a job title and location.');
     return;
   }
 
-  const purposeMap = {
-    client_call: 'preparing for a client intake call — include talking points to educate the client on market realities',
-    candidate_offer: 'advising a candidate on their rate — include what they should ask for and what is realistic',
-    sourcing: 'understanding where to find candidates — include specific sourcing channels and strategies',
+  const apiKey = sessionStorage.getItem('vh_key');
+  if (!apiKey) {
+    alert('No API key found. Please log out and log back in.');
+    return;
+  }
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-mkt-loading').classList.add('active');
+
+  const purposeLabels = {
+    client_call: 'preparing for a client intake call',
+    candidate_offer: 'advising a candidate on their rate',
+    sourcing: 'understanding where to find candidates',
     general: 'general market understanding'
   };
 
-  const prompt = "You are a senior technical recruiting market expert. Provide a market intelligence brief for this role. Return ONLY valid JSON with no extra text.\n\n" +
-    "Role: " + title + "\nLevel: " + level + "\nLocation: " + location + "\nType: " + type + (skills ? "\nSkills: " + skills : "") + "\nPurpose: " + (purposeMap[purpose] || "general") + "\nDate: May 2026\n\n" +
-    'Return this JSON structure: {"roleTitle":"","location":"","marketDemand":"HIGH|MEDIUM|LOW","candidateAvailability":"SCARCE|MODERATE|ABUNDANT","salaryRange":{"min":"","max":"","midpoint":"","note":""},"contractRate":{"min":"","max":"","note":""},"timeToFill":"","topSourcingChannels":["","",""],"keySkillsInDemand":["","",""],"marketTrends":["","",""],"clientTalkingPoints":["","",""],"candidateTalkingPoints":["","",""],"redFlags":["",""],"summary":""}';
+  const purposeText = purposeLabels[purpose] || 'general market understanding';
+  const skillsText = skills ? ('Key Skills: ' + skills + '\n') : '';
+
+  const prompt = 'You are a senior technical recruiting market expert with deep knowledge of US tech hiring. '
+    + 'Provide a market intelligence brief. Return ONLY valid JSON, no extra text.\n\n'
+    + 'Role: ' + title + '\n'
+    + 'Level: ' + level + '\n'
+    + 'Location: ' + location + '\n'
+    + 'Employment Type: ' + type + '\n'
+    + skillsText
+    + 'Purpose: ' + purposeText + '\n'
+    + 'Date: May 2026\n\n'
+    + 'Return JSON with these fields: roleTitle, location, marketDemand (HIGH/MEDIUM/LOW), '
+    + 'candidateAvailability (SCARCE/MODERATE/ABUNDANT), '
+    + 'salaryRange (min/max/midpoint/note), contractRate (min/max/note), '
+    + 'timeToFill, topSourcingChannels (array), keySkillsInDemand (array), '
+    + 'marketTrends (array), clientTalkingPoints (array), '
+    + 'candidateTalkingPoints (array), redFlags (array), summary (string).';
 
   try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": sessionStorage.getItem('vh_key'), "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 1500, messages: [{ role: "user", content: prompt }] })
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
+
     const data = await resp.json();
-    if (data.error) { nav('market'); alert('API Error: ' + data.error.message); return; }
-    const raw = data.content.map(c => c.text || '').join('');
+    if (data.error) {
+      nav('market');
+      alert('API Error: ' + data.error.message);
+      return;
+    }
+
+    const raw = data.content.map(function(c) { return c.text || ''; }).join('');
     let result;
-    try { result = JSON.parse(raw.replace(/```json|```/g, '').trim()); }
-    catch(e) { const m = raw.match(/\{[\s\S]*\}/); if(m) result = JSON.parse(m[0]); }
-    if (!result) throw new Error('Could not generate brief');
+    try {
+      result = JSON.parse(raw.replace(/```json/g, '').replace(/```/g, '').trim());
+    } catch(e) {
+      const m = raw.match(/\{[\s\S]*\}/);
+      if (m) {
+        try { result = JSON.parse(m[0]); } catch(e2) {}
+      }
+    }
+
+    if (!result) {
+      nav('market');
+      alert('Could not generate brief — please try again.');
+      return;
+    }
+
     renderMarketBrief(result);
-  } catch(e) { 
-    nav('market'); 
-    console.error('Market error:', e);
-    alert('Error: ' + e.message + ' — Please try again.'); 
+
+  } catch(e) {
+    nav('market');
+    alert('Error: ' + e.message);
   }
 }
+
 
 function renderMarketBrief(r) {
   nav('market');
